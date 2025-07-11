@@ -1,5 +1,5 @@
 import './index.css'
-import { BasicForm } from './components/BasicForm'
+import BasicForm from './components/BasicForm'
 export const App = () => {
   return (
     <div>
