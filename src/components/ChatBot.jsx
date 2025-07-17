@@ -34,31 +34,56 @@ export const ChatBot = () => {
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit(handlePregunta)}>
+    <div className='flex flex-col h-screen bg-gray-950 text-white font-sans'>
+      {/* Header */}
+      <div className='bg-black text-red-600 text-2xl font-bold px-4 py-3 shadow border-b border-red-800'>
+        ChatBot HIROD
+      </div>
+
+      {/* Área de mensajes */}
+      <div className='flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-red-800'>
+        {state.messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`max-w-[75%] p-3 rounded-2xl shadow animate-fade-in transition duration-300 ease-in-out
+              ${msg.from === 'user'
+                ? 'bg-red-700 text-white self-end ml-auto'
+                : 'bg-gray-800 text-gray-200 self-start mr-auto'
+              }`}
+          >
+            <p className='text-sm'>
+              <strong>{msg.from === 'user' ? 'Tú' : 'Bot'}:</strong> {msg.text}
+            </p>
+          </div>
+        ))}
+        {state.loading && (
+          <p className='text-center text-red-400 italic animate-pulse'>Invocando respuesta... 🩸</p>
+        )}
+      </div>
+
+      {/* Input de texto */}
+      <form
+        onSubmit={handleSubmit(handlePregunta)}
+        className='p-4 bg-black border-t border-red-900 flex gap-2'
+      >
         <input
           type='text'
           {...register('userInput')}
-          className='w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400'
+          className='flex-1 px-4 py-2 rounded-full bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600'
+          placeholder='Escribe algo... '
         />
-        {errors.userInput && <p>{errors.userInput.message}</p>}
         <button
-          className='w-full py-2 rounded transition cursor-pointer bg-blue-600 text-white hover:bg-blue-700'
-        >Preguntar
+          type='submit'
+          className='bg-red-600 text-white px-5 py-2 rounded-full hover:bg-red-700 transition shadow'
+        >
+          Preguntar
         </button>
       </form>
-      {/* <div>
-        <p>{loading ? 'Generando respuesta 🚀' : response}</p>
-      </div> */}
-      <div>
-        {state.messages.map((msg, index) => (
-          <p key={index}>
-            <strong>{msg.from === 'user' ? 'Tú' : 'Bot'}:</strong>
-            {msg.text}
-          </p>
-        ))}
-        {state.loading && <p>Generando respuesta 🚀 </p>}
-      </div>
-    </>
+
+      {/* Error de validación */}
+      {errors.userInput && (
+        <p className='text-red-400 text-sm text-center px-4 pb-2'>{errors.userInput.message}</p>
+      )}
+    </div>
   )
 }

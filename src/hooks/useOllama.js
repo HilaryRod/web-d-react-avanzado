@@ -8,8 +8,18 @@ export const useOllama = () => {
         prompt: userPrompt,
         stream: false
       })
-      return res
-      // Dispatch para guardar el mensaje del usuario
+
+      // Eliminar el <think>...</think> porque no me gusta
+      const cleanText = res.data.response.replace(/<think>|<\/think>/gi, '').trim()
+
+      // Devolver la respuesta con el texto limpio
+      return {
+        ...res,
+        data: {
+          ...res.data,
+          response: cleanText
+        }
+      }
     } catch (error) {
       console.error('error: ', error)
     }
