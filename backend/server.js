@@ -25,6 +25,33 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
+// GET: obtener mensajes
+app.get('/api/messages', async (req, res) => {
+  await db.read()
+  res.json(db.data.messages)
+})
+// POST: Ruta para agregar nuevo mensaje
+app.post('/api/messages', async (req, res) => {
+  // text, sender
+  const { text, sender } = req.body
+  if (!text || !sender) {
+    return res.status(400).json({ error: 'Faltan campos en el objeto' })
+  }
+
+  const newMessage = {
+    id: Date.now(),
+    text,
+    sender,
+    timestamp: new Date().toISOString()
+  }
+
+  await db.read()
+  db.data.messages.push(newMessage)
+  await db.write()
+
+  res.status(201).json(newMessage)
+})
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en: http://localhost:${PORT}`)
 })
