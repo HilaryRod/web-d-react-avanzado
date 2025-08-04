@@ -1,22 +1,22 @@
 import { Low } from 'lowdb'
 import { JSONFile } from 'lowdb/node'
-import { join, dirname } from 'path'
+import { join } from 'path'
 import { fileURLToPath } from 'url'
 
-// Rutas
+// Configurar ruta al archivo db.json
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __dirname = join(__filename, '..')
 const file = join(__dirname, 'db.json')
 const adapter = new JSONFile(file)
-const db = new Low(adapter)
+const defaultData = { messages: [] }
 
-// Leer el archivo
+const db = new Low(adapter, defaultData)
+
 await db.read()
 
-// Si esta vacio tendra esta estructura
-db.data ||= { messages: [] }
+// Asegura que la estructura mínima esté presente
+db.data ||= defaultData
 
-// Guardar
 await db.write()
 
 export default db

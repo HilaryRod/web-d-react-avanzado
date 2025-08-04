@@ -1,10 +1,11 @@
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ChatContext } from '../context/ChatContext'
 import { useOllama } from '../hooks/useOllama'
 import axios from 'axios'
+import '../index.css'
 
 const schema = yup.object({
   userInput: yup
@@ -19,47 +20,48 @@ export const ChatBot = () => {
   })
   const { state, dispatch } = useContext(ChatContext)
   const { sendMessage } = useOllama()
+  const [messagesLoaded, setMessagesLoaded] = useState(false)
 
   useEffect(() => {
     const fetchMessages = async () => {
+      if (messagesLoaded) return
+
+      dispatch({ type: 'CLEAR_MESSAGES' })
+
       try {
         const res = await axios.get('http://localhost:3001/api/messages')
         res.data.forEach(m => {
           dispatch({
             type: 'ADD_MESSAGE',
             payload: {
-              sender: m.sender === 'user' ? 'user' : 'bot',
+              id: m.id,
+              from: m.sender,
               text: m.text
             }
           })
         })
+        setMessagesLoaded(true)
       } catch (error) {
-        console.error('Error al cargar mensaje', error)
+        console.error('Error al cargar mensajes', error)
       }
     }
+
     fetchMessages()
-  }, [dispatch])
+  }, [dispatch, messagesLoaded])
 
   const handlePregunta = async (data) => {
-    const userMessage = { sender: 'user', text: data.userInput }
-    dispatch({ type: 'ADD_MESSAGE', payload: { from: 'user', text: data.userInput } })
+    const userId = Date.now()
+    dispatch({ type: 'ADD_MESSAGE', payload: { id: userId, from: 'user', text: data.userInput } })
     dispatch({ type: 'SET_LOADING', payload: true })
 
     try {
-    // 1. Guarda el mensaje del usuario en la bd
-      await axios.post('http://localhost:3001/api/messages', userMessage)
-
-      // 2. Enviar mensaje a Ollama
       const res = await sendMessage(data.userInput)
-
-      const botMessage = { sender: 'bot', text: res.data.response }
-
-      // 3. Guarda la res del bot en la bd
-      await axios.post('http://localhost:3001/api/messages', botMessage)
-
-      dispatch({ type: 'ADD_MESSAGE', payload: { from: 'bot', text: res.data.response } })
+      dispatch({
+        type: 'ADD_MESSAGE',
+        payload: { id: Date.now() + 1, from: 'bot', text: res.data.response }
+      })
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false })
     }
@@ -74,9 +76,9 @@ export const ChatBot = () => {
 
       {/* Área de mensajes */}
       <div className='flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-red-800'>
-        {state.messages.map((msg, index) => (
+        {state.messages.map((msg) => (
           <div
-            key={index}
+            key={msg.id}
             className={`max-w-[75%] p-3 rounded-2xl shadow animate-fade-in transition duration-300 ease-in-out
               ${msg.from === 'user'
                 ? 'bg-red-700 text-white self-end ml-auto'
@@ -84,13 +86,16 @@ export const ChatBot = () => {
               }`}
           >
             <p className='text-sm'>
-              <strong>{msg.from === 'user' ? 'Tú' : 'Bot'}:</strong> {msg.text}
+              <strong>{msg.from === 'user' ? 'Tú' : 'bot'}:</strong> {msg.text}
             </p>
           </div>
         ))}
         {state.loading && (
-          <p className='text-center text-red-400 italic animate-pulse'>Invocando respuesta... 🩸</p>
+          <p className='text-center text-red-400 italic animate-pulse'>
+            Invocando respuesta... 🩸
+          </p>
         )}
+        <div />
       </div>
 
       {/* Input de texto */}

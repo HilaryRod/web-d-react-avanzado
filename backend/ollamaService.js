@@ -7,7 +7,7 @@ export const generateFromOllama = async (prompt) => {
     stream: false
   })
 
-  // Eliminar las etiquetas <think>...</think>
+  // Eliminar etiquetas <think>...</think>
   const cleanText = res.data.response.replace(/<think>|<\/think>/gi, '').trim()
 
   return cleanText

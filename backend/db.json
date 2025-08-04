@@ -1,3 +1,40 @@
 {
-  "messages": []
+  "messages": [
+    {
+      "id": 1754281936746,
+      "text": "holaa",
+      "sender": "user",
+      "timestamp": "2025-08-04T04:32:16.746Z"
+    },
+    {
+      "id": 1754281936747,
+      "text": "Hola! ¡Cómo estás?",
+      "sender": "bot",
+      "timestamp": "2025-08-04T04:32:16.746Z"
+    },
+    {
+      "id": 1754282025293,
+      "text": "holaaa",
+      "sender": "user",
+      "timestamp": "2025-08-04T04:33:45.293Z"
+    },
+    {
+      "id": 1754282025294,
+      "text": "Hola! ¡Cómo estás? 😊",
+      "sender": "bot",
+      "timestamp": "2025-08-04T04:33:45.293Z"
+    },
+    {
+      "id": 1754282622048,
+      "text": "hola, capital de mexico?",
+      "sender": "user",
+      "timestamp": "2025-08-04T04:43:42.048Z"
+    },
+    {
+      "id": 1754282622049,
+      "text": "¡Hola! La capital de México es la Ciudad de México (antes conocida como México D.F.).",
+      "sender": "bot",
+      "timestamp": "2025-08-04T04:43:42.048Z"
+    }
+  ]
 }
